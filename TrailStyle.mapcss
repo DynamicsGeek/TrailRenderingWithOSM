@@ -1,0 +1,238 @@
+meta 
+{
+    title: "TrailStyle";
+    description: "visualize trail information, based on Heiko Woehrle MTB style";
+    version: "0.01_2022_0730";
+    author: "Troy Hartwig, Heiko Woehrle";
+    link: "https://";
+    min-josm-version: 7110; 
+}
+
+
+/* basic geometry */
+canvas
+{
+    fill-color: #606060;
+}
+
+node
+{
+    symbol-shape: circle;
+    symbol-fill-color: darkgrey;
+    symbol-stroke-color: lightgreen;
+}
+node|z-15
+{
+    symbol-size: 1;
+}
+node|z16
+{
+    symbol-size: 5;
+}
+node|z17
+{
+    symbol-size: 7;
+    symbol-stroke-width: 2;
+}
+node|z18-
+{
+    symbol-size: 10;
+    symbol-stroke-width: 3;
+}
+node:connection
+{
+    symbol-fill-color: yellow;    
+}
+
+
+way[highway=~/cycleway|track|footway|path/]["footway"!="sidewalk"]["footway"!="crossing"][!golf][foot!=no]
+{
+	set trails;
+}
+
+way.trails
+{
+	color: #684718;
+	width: 3;
+}
+
+way.trails[wheelchair][wheelchair=~/yes|limited|designated/],
+way.trails[smoothness=~/excellent|good|intermediate/][!sac_scale],
+way.trails[!smoothness][!sac_scale][Mtb:scale=0],
+way.trails[!smoothness][!sac_scale][!Mtb:scale][incline<8],
+way.trails[!smoothness][!sac_scale][!Mtb:scale][surface=~/asphalt|chipseal|fine_gravel|paved|concrete|paving_stones|ompacted|metal|wood/]
+{
+
+	set accessible;
+	color: lightgrey;
+
+}
+
+way.accessible[wheelchair=no]
+way.accessible[sac_scale],  
+way.accessible[mtb:scale][mtb:scale!=0],
+way.accessible[incline>8],
+way.moderate[trail_visibility=~/good|intermediate|bad|horrible/]
+
+{
+	set inc_accessible;
+	dashes: 4,4;
+}
+
+way.trails[sac_scale=hiking],
+way.trails[!sac_scale][Mtb:scale=1],
+way.trails[!sac_scale][!Mtb:scale][smoothness=bad],
+way.trails[!sac_scale][!Mtb:scale][!smoothness][incline<40][incline>8],
+way.trails[!sac_scale][!Mtb:scale][!smoothness][surface=~/sett|unhewn_cobblestone|cobblestone|stepping_stones|unpaved|gravel|pebblestone|grass|grass_paver|sand|woodchips/]
+{
+
+	set easy;
+	color: #68D618;
+
+}
+
+way.easy[sac_scale][sac_scale!=hiking],  
+way.easy[mtb:scale][mtb:scale!=1],
+way.easy[incline<8],
+way.easy[incline>40],
+way.moderate[trail_visibility=~/good|intermediate|bad|horrible/]
+
+{
+	set inc_easy;
+	dashes: 4,4;
+}
+
+way.trails[sac_scale=mountain_hiking],
+way.trails[!sac_scale][Mtb:scale=2],
+way.trails[!sac_scale][!Mtb:scale][smoothness=~/very_bad|horrible/],
+way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>40][incline<70]
+{
+
+	set moderate;
+	color: blue;
+
+}
+
+way.moderate[sac_scale][sac_scale!=mountain_hiking],  /*what does this do if there no sac_scale tag?*/
+way.moderate[mtb:scale][mtb:scale!=2],
+way.moderate[incline<40],
+way.moderate[incline>70],
+way.moderate[surface!~/unpaved|rock|ground|dirt|earth|mud/],
+way.moderate[trail_visibility=~/intermediate|bad|horrible/]
+{
+	set inc_moderate;
+	dashes: 4,4;
+}
+
+way.trails[sac_scale=demanding_mountain_hiking],
+way.trails[!sac_scale][mtb:scale=~/3|4/],
+way.trails[!sac_scale][!mtb:scale][smoothness=very_horrible],
+way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>70][incline<100]
+{
+
+	set difficult;
+	color: red;
+
+}
+
+way.difficult[sac_scale][sac_scale!=demanding_mountain_hiking],  /*what does this do if there no sac_scale tag?*/
+way.difficult[mtb:scale][mtb:scale!~/3|4/],
+way.difficult[incline<70],
+way.difficult[incline>100],
+way.difficult[surface!~/unpaved|rock|ground|dirt|earth|mud/],
+way.moderate[trail_visibility=~/bad|horrible/]
+{
+	set inc_difficult;
+	dashes: 4,4;
+}
+
+way.trails[sac_scale=alpine_hiking],
+way.trails[!sac_scale][Mtb:scale=5],
+way.trails[!sac_scale][!Mtb:scale][smoothness=impassable],
+way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>100]
+{
+
+	set very_difficult;
+	color: black;
+
+}
+
+way.very_difficult[sac_scale][sac_scale!=alpine_hiking],  /*what does this do if there no sac_scale tag?*/
+way.very_difficult[mtb:scale][mtb:scale!=5],
+way.very_difficult[incline<100],
+way.very_difficult[surface!~/unpaved|rock|ground|dirt|earth|mud/],
+way.moderate[trail_visibility=~/horrible/]
+{
+	set inc_very_difficult;
+	dashes: 4,4;
+}
+
+
+/* MTB INFOS =* tag styles */
+
+way[mtb:scale=6]
+{
+	color: red;
+	dashes: list(7,7);
+	dashes-background-color: black;
+}
+
+
+/* Display of minor roads that are usally useable by bike */
+
+way[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
+{
+	color: white;
+	opacity: 0.5;
+	casing-color: #684718;
+	casing-width: 1;
+}
+  way|z-14[highway=~/unclassified|residential|tertiary|service/]
+    {
+	width: 2;
+    }
+  way|z15-16[highway=~/unclassified|residential|tertiary|service/]
+    {
+	width: 3;
+    }
+  way|z17-[highway=~/unclassified|residential|tertiary|service/]
+    {
+	width: 5;
+    }
+
+
+/* Display of regional and big roads */
+
+way[highway=~/motorway|trunk|primary|secondary/]
+{
+	color: #E6DEBE;
+	opacity: 0.5;
+	casing-color: #684718;
+	casing-width: 2;
+}
+  way|z-14[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 6;
+    }
+  way|z15-16[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 8;
+    }
+  way|z17-[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 12;
+    }
+
+
+
+
+way[waterway]
+{
+	color: #6CCEE4;
+	width: 2;
+}
+
+/* add a background glow for ways taking part in a bicycle route relation - similar to what is done in potlatch2.mapcss */
+relation[type=route][route=bicycle][network=ncn] > way::relation_underlay { z-index: -200; width: 15; color: red; opacity: 0.08; linecap: none; }
+relation[type=route][route=bicycle][network=rcn] > way::relation_underlay { z-index: -200; width: 15; color: cyan; opacity: 0.08; linecap: none; }
+relation[type=route][route=bicycle][network=lcn] > way::relation_underlay { z-index: -200; width: 15; color: blue; opacity: 0.08; linecap: none; }
