@@ -167,15 +167,24 @@ way.moderate[trail_visibility=~/horrible/]
 	dashes: 4,4;
 }
 
-
-/* MTB INFOS =* tag styles */
-
-way[mtb:scale=6]
+way.trails[sac_scale=demanding_alpine_hiking],
+way.trails[!sac_scale][Mtb:scale=6],
 {
-	color: red;
-	dashes: list(7,7);
-	dashes-background-color: black;
+
+	set expert;
+	color: orange;
+
 }
+
+way.very_difficult[sac_scale][sac_scale!=demanding_alpine_hiking],  /*what does this do if there no sac_scale tag?*/
+way.very_difficult[mtb:scale][mtb:scale!=6],
+way.very_difficult[incline<100],
+way.very_difficult[surface!~/rock|ground|dirt|earth/],
+{
+	set inc_expert;
+	dashes: 4,4;
+}
+
 
 
 /* Display of minor roads that are usally useable by bike */
