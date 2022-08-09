@@ -44,7 +44,7 @@ node:connection
     symbol-fill-color: yellow;    
 }
 
-
+/* Identify all ways which might be walking, hiking, and biking paths */
 way[highway=~/cycleway|track|footway|path/]["footway"!="sidewalk"]["footway"!="crossing"][!golf][foot!=no]
 {
 	set trails;
