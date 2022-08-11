@@ -48,13 +48,41 @@ node:connection
 way[highway=~/cycleway|track|footway|path/]["footway"!="sidewalk"]["footway"!="crossing"][!golf][foot!=no]
 {
 	set trails;
+	color: Sienna;
+	width: 3;
+
 }
 
-way.trails
+
+way.trails[access=no],
+way.trails[access=private]
 {
-	color: #684718;
-	width: 3;
+	set closed;
+	width: 1;
+	dashes: 2,2;
+	color: DarkRed;
+
 }
+
+/*TODO, remove closed trails from the trials set for further rendering */
+
+way.trails[informal=yes]
+{
+	set social;
+	color: Pink;
+    width: 3;
+
+}
+
+way.trails[operator],
+way.trails[informal=no],
+way.trails[foot=designated]
+{
+    set official; 
+	width: 5;
+}
+
+
 
 way.trails[wheelchair][wheelchair=~/yes|limited|designated/],
 way.trails[smoothness=~/excellent|good|intermediate/][!sac_scale],
@@ -64,7 +92,7 @@ way.trails[!smoothness][!sac_scale][!Mtb:scale][surface=~/asphalt|chipseal|fine_
 {
 
 	set accessible;
-	color: lightgrey;
+	color: LightGrey;
 
 }
 
@@ -87,7 +115,7 @@ way.trails[!sac_scale][!Mtb:scale][!smoothness][surface=~/sett|unhewn_cobbleston
 {
 
 	set easy;
-	color: #68D618;
+	color: lawngreen;
 
 }
 
@@ -95,8 +123,7 @@ way.easy[sac_scale][sac_scale!=hiking],
 way.easy[mtb:scale][mtb:scale!=1],
 way.easy[incline<8],
 way.easy[incline>40],
-way.moderate[trail_visibility=~/good|intermediate|bad|horrible/]
-
+way.easy[trail_visibility=~/good|intermediate|bad|horrible/]
 {
 	set inc_easy;
 	dashes: 4,4;
@@ -109,11 +136,11 @@ way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>40][incline<70]
 {
 
 	set moderate;
-	color: blue;
+	color: Blue;
 
 }
 
-way.moderate[sac_scale][sac_scale!=mountain_hiking],  /*what does this do if there no sac_scale tag?*/
+way.moderate[sac_scale][sac_scale!=mountain_hiking],  
 way.moderate[mtb:scale][mtb:scale!=2],
 way.moderate[incline<40],
 way.moderate[incline>70],
@@ -168,7 +195,7 @@ way.moderate[trail_visibility=~/horrible/]
 }
 
 way.trails[sac_scale=demanding_alpine_hiking],
-way.trails[!sac_scale][Mtb:scale=6],
+way.trails[!sac_scale][Mtb:scale=6]
 {
 
 	set expert;
@@ -179,7 +206,7 @@ way.trails[!sac_scale][Mtb:scale=6],
 way.very_difficult[sac_scale][sac_scale!=demanding_alpine_hiking],  /*what does this do if there no sac_scale tag?*/
 way.very_difficult[mtb:scale][mtb:scale!=6],
 way.very_difficult[incline<100],
-way.very_difficult[surface!~/rock|ground|dirt|earth/],
+way.very_difficult[surface!~/rock|ground|dirt|earth/]
 {
 	set inc_expert;
 	dashes: 4,4;
@@ -242,6 +269,4 @@ way[waterway]
 }
 
 /* add a background glow for ways taking part in a bicycle route relation - similar to what is done in potlatch2.mapcss */
-relation[type=route][route=bicycle][network=ncn] > way::relation_underlay { z-index: -200; width: 15; color: red; opacity: 0.08; linecap: none; }
-relation[type=route][route=bicycle][network=rcn] > way::relation_underlay { z-index: -200; width: 15; color: cyan; opacity: 0.08; linecap: none; }
-relation[type=route][route=bicycle][network=lcn] > way::relation_underlay { z-index: -200; width: 15; color: blue; opacity: 0.08; linecap: none; }
+relation[type=route][route=~/mtb|hiking/] > way::relation_underlay { z-index: -200; width: 12; color: aqua; opacity: 0.18; linecap: none; } 
