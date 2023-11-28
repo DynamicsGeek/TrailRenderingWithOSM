@@ -12,31 +12,32 @@ meta
 /* basic geometry */
 canvas
 {
-    fill-color: #606060;
+    /* fill-color: #909090; 
+	fill-opacity: 0.5;  */
+	
+	fill-color: #ffffea;
 }
 
+/* */
 node
 {
     symbol-shape: circle;
     symbol-fill-color: darkgrey;
     symbol-stroke-color: lightgreen;
 }
-node|z-15
+node|z-16
 {
-    symbol-size: 1;
-}
-node|z16
-{
-    symbol-size: 5;
+    symbol-stroke-opacity: 0;
+	symbol-fill-opacity: 0;
 }
 node|z17
 {
-    symbol-size: 7;
+    symbol-size: 6;
     symbol-stroke-width: 2;
 }
 node|z18-
 {
-    symbol-size: 10;
+    symbol-size: 8;
     symbol-stroke-width: 3;
 }
 node:connection
@@ -44,178 +45,243 @@ node:connection
     symbol-fill-color: yellow;    
 }
 
-/* Identify all ways which might be walking, hiking, and biking paths */
-way[highway=~/cycleway|track|footway|path/]["footway"!="sidewalk"]["footway"!="crossing"][!golf][foot!=no]
+
+/* Identify all ways which might be walking, hiking, and biking paths 
+Foot:
+*   yes, permissive +5
+*   designated +10
+*   no -100
+
+Name:
+*   ends in "trail" +10
+*   any name +5
+*   ends in street, road, ... -10
+
+highway:
+*   Path +5 (and consider naming)
+*   track (and not named as a road, and not foot=no then render as hiking track)
+*   cycleway (if foot=designated then it is a hiking track and rendered same as other cycleways)
+  
+footway:
+*  access_aisle|crossing|sidewalk|both|link|left|right|separate|traffic_island -20
+*  path|track +5
+  
+horse
+*  yes +5
+
+*horse_scale +5
+
+Informal 
+*  yes +200
+ 
+*mtb:scale  +10
+*sac_scale  +20
+
+smoothness
+*   excellent|good|intermediate -5 (not for hiking but for wheelchair or stroller)
+*   others +10
+   
+Tracktype
+*   grade1 -5 (paved or sealed, not hiking, but maybe accessible)
+*   grade2|grade3|grade4|grade5 +10
+   
+Surface
+*   Accessible surfaces below -20
+*   green surfaces below +5
+*   blue surfaces +10
+
+*Visibility +20
+
+Wheelchair 
+*   yes|limited|designated -20 
+*   no +5
+
+
+*/
+
+/* create a class which includes all of potential paths.  
+Render emphasis below based on tags which indicate hiking qualities */
+
+way[highway=~/cycleway|track|footway|path|bridleway/][footway!~/access_aisle|crossing|sidewalk|both|link|left|right|separate|traffic_island/][!golf][foot!=no],
+way[footway=~/path|track/],
+way[hiking],
+way[horse_scale],
+way[mtb:scale],
+way[sac_scale],
+way[horse=yes]
 {
-	set trails;
-	color: Sienna;
+	set .trails;
+	color: black;
+	dashes: 18,12;
+	casing-opacity: 0;
+
+}
+
+  way|z-14.trails
+    {
+	width: 2;
+	casing-width: 1;
+    }
+  way|z15-16.trails
+    {
 	width: 3;
+    casing-width: 2;
+    }
+  way|z17-.trails
+    {
+	width: 4;
+    casing-width: 3;
+    }
 
-}
 
 
-way.trails[access=no],
-way.trails[access=private]
-{
-	set closed;
-	width: 1;
-	dashes: 2,2;
-	color: DarkRed;
-
-}
-
-/*TODO, remove closed trails from the trials set for further rendering */
-
-way.trails[informal=yes]
-{
-	set social;
-	color: Pink;
-    width: 3;
-
-}
-
-way.trails[operator],
-way.trails[informal=no],
-way.trails[foot=designated]
+/* I might consider the existing of a marked name would make it official too, not trails access project */
+/* also foot=designated should mean official per the wiki, but might not be consistently tagged */
+way.trails[operator][!informal],
+way.trails[informal=no]
 {
     set official; 
-	width: 5;
 }
 
+  way|z-14.official
+    {
+	width: 4;
+	casing-width: 2;
+    
+    }
+  way|z15-16.official
+    {
+	width: 6;
+	casing-width: 4;
+    
+    }
+  way|z17-.official
+    {
+	width: 8;
+	casing-width: 6;
+    
+    }
 
 
+way[!is_prop_set(official, default)]
+{
+   
+}
+
+/* identify difficulty level */
+
+/*ACCESSIBLE*/
 way.trails[wheelchair][wheelchair=~/yes|limited|designated/],
 way.trails[smoothness=~/excellent|good|intermediate/][!sac_scale],
-way.trails[!smoothness][!sac_scale][Mtb:scale=0],
-way.trails[!smoothness][!sac_scale][!Mtb:scale][incline<8],
-way.trails[!smoothness][!sac_scale][!Mtb:scale][surface=~/asphalt|chipseal|fine_gravel|paved|concrete|paving_stones|ompacted|metal|wood/]
-{
-
-	set accessible;
-	color: LightGrey;
-
-}
+way.trails[tracktype=grade1],
+way.trails[!smoothness][!sac_scale][mtb:scale=0],
+way.trails[!smoothness][!sac_scale][!mtb:scale][incline<8],
+way.trails[!smoothness][!sac_scale][!mtb:scale][surface=~/asphalt|chipseal|fine_gravel|paved|concrete|concrete:lanes|concrete:plates|paving_stones|compacted|metal|wood|sett/]
+{set .accessible;}
+way[is_prop_set(accessible, default)]::access_layer {z-index: -20; width: +3;  color: lightgrey; opacity: .6; linecap: none;}
 
 way.accessible[wheelchair=no]
 way.accessible[sac_scale],  
 way.accessible[mtb:scale][mtb:scale!=0],
 way.accessible[incline>8],
 way.moderate[trail_visibility=~/good|intermediate|bad|horrible/]
+{set .inc_accessible;}
+way[is_prop_set(inc_accessible, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
-{
-	set inc_accessible;
-	dashes: 4,4;
-}
-
+/*EASY*/
 way.trails[sac_scale=hiking],
-way.trails[!sac_scale][Mtb:scale=1],
-way.trails[!sac_scale][!Mtb:scale][smoothness=bad],
-way.trails[!sac_scale][!Mtb:scale][!smoothness][incline<40][incline>8],
-way.trails[!sac_scale][!Mtb:scale][!smoothness][surface=~/sett|unhewn_cobblestone|cobblestone|stepping_stones|unpaved|gravel|pebblestone|grass|grass_paver|sand|woodchips/]
-{
-
-	set easy;
-	color: lawngreen;
-
-}
+way.trails[!sac_scale][mtb:scale=1],
+way.trails[!sac_scale][!mtb:scale][smoothness=bad],
+way.trails[!sac_scale][!mtb:scale][!smoothness][incline<40][incline>8],
+way.trails[!sac_scale][!mtb:scale][!smoothness][surface=~/unhewn_cobblestone|cobblestone|stepping_stones|unpaved|gravel|pebblestone|grass|grass_paver|sand|woodchips/]
+{set .easy;}
+way[is_prop_set(easy, default)]::access_layer {z-index: -20; width: +3;  color: green; opacity: .6; linecap: none;}
 
 way.easy[sac_scale][sac_scale!=hiking],  
-way.easy[mtb:scale][mtb:scale!=1],
+way.easy[mtb:scale][mtb:scale!~/1/],
 way.easy[incline<8],
 way.easy[incline>40],
-way.easy[trail_visibility=~/good|intermediate|bad|horrible/]
-{
-	set inc_easy;
-	dashes: 4,4;
-}
+way.easy[trail_visibility][trail_visibility=~/good|intermediate|bad|horrible/]
+{set .inc_easy;}
+way[is_prop_set(inc_easy, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
+/*MODERATE*/
 way.trails[sac_scale=mountain_hiking],
-way.trails[!sac_scale][Mtb:scale=2],
-way.trails[!sac_scale][!Mtb:scale][smoothness=~/very_bad|horrible/],
-way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>40][incline<70]
-{
-
-	set moderate;
-	color: Blue;
-
-}
+way.trails[!sac_scale][mtb:scale=2],
+way.trails[!sac_scale][!mtb:scale][smoothness=~/very_bad|horrible/],
+way.trails[!smoothness][!sac_scale][!mtb:scale][incline>40][incline<70]
+{set .moderate;}
+way[is_prop_set(moderate, default)]::access_layer {	z-index: -20; width: +3;  color: blue; opacity: 1; linecap: none;}
 
 way.moderate[sac_scale][sac_scale!=mountain_hiking],  
-way.moderate[mtb:scale][mtb:scale!=2],
+way.moderate[mtb:scale][mtb:scale!~/2/],
 way.moderate[incline<40],
 way.moderate[incline>70],
 way.moderate[surface!~/unpaved|rock|ground|dirt|earth|mud/],
-way.moderate[trail_visibility=~/intermediate|bad|horrible/]
-{
-	set inc_moderate;
-	dashes: 4,4;
-}
+way.moderate[trail_visibility][trail_visibility=~/intermediate|bad|horrible/]
+{set .inc_moderate;}
+way[is_prop_set(inc_moderate, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
+/*DIFFICULT*/
 way.trails[sac_scale=demanding_mountain_hiking],
 way.trails[!sac_scale][mtb:scale=~/3|4/],
 way.trails[!sac_scale][!mtb:scale][smoothness=very_horrible],
-way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>70][incline<100]
-{
+way.trails[!smoothness][!sac_scale][!mtb:scale][incline>70][incline<100]
+{set .difficult;}
+way[is_prop_set(difficult, default)]::access_layer {	z-index: -20; width: +3;  color: red; opacity: .6; linecap: none;}
 
-	set difficult;
-	color: red;
-
-}
-
-way.difficult[sac_scale][sac_scale!=demanding_mountain_hiking],  /*what does this do if there no sac_scale tag?*/
+way.difficult[sac_scale][sac_scale!=demanding_mountain_hiking],  
 way.difficult[mtb:scale][mtb:scale!~/3|4/],
 way.difficult[incline<70],
 way.difficult[incline>100],
 way.difficult[surface!~/unpaved|rock|ground|dirt|earth|mud/],
-way.moderate[trail_visibility=~/bad|horrible/]
-{
-	set inc_difficult;
-	dashes: 4,4;
-}
+way.difficult[trail_visibility][trail_visibility=~/bad|horrible/]
+{set .inc_difficult;}
+way[is_prop_set(inc_difficult, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
+/*VERY_DIFFICULT*/
 way.trails[sac_scale=alpine_hiking],
-way.trails[!sac_scale][Mtb:scale=5],
-way.trails[!sac_scale][!Mtb:scale][smoothness=impassable],
-way.trails[!smoothness][!sac_scale][!Mtb:scale][incline>100]
-{
+way.trails[!sac_scale][mtb:scale=5],
+way.trails[!sac_scale][!mtb:scale][smoothness=impassable],
+way.trails[!smoothness][!sac_scale][!mtb:scale][incline>100]
+{set .very_difficult;}
+way[is_prop_set(very_difficult, default)]::access_layer {	z-index: -20; width: +3;  color: black; opacity: .6; linecap: none;}
 
-	set very_difficult;
-	color: black;
-
-}
-
-way.very_difficult[sac_scale][sac_scale!=alpine_hiking],  /*what does this do if there no sac_scale tag?*/
+way.very_difficult[sac_scale][sac_scale!=alpine_hiking],  
 way.very_difficult[mtb:scale][mtb:scale!=5],
 way.very_difficult[incline<100],
 way.very_difficult[surface!~/unpaved|rock|ground|dirt|earth|mud/],
-way.moderate[trail_visibility=~/horrible/]
-{
-	set inc_very_difficult;
-	dashes: 4,4;
-}
+way.very_difficult[trail_visibility][trail_visibility=~/horrible/]
+{set .inc_very_difficult;}
+way[is_prop_set(inc_very_difficult, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
+/*EXPERT*/
 way.trails[sac_scale=demanding_alpine_hiking],
-way.trails[!sac_scale][Mtb:scale=6]
-{
+way.trails[!sac_scale][mtb:scale=6]
+{set .expert;}
+way[is_prop_set(expert, default)]::access_layer {	z-index: -20; width: +3;  color: orange; opacity: .6; linecap: none;}
 
-	set expert;
-	color: orange;
+way.expert[sac_scale][sac_scale!=demanding_alpine_hiking],  
+way.expert[mtb:scale][mtb:scale!=6],
+way.expert[incline<100],
+way.expert[surface!~/rock|ground|dirt|earth/]
+{set .inc_expert;}
+way[is_prop_set(inc_expert, default)]::access_layer {dashes: 27,3; dashes-offset: 5;}
 
-}
 
-way.very_difficult[sac_scale][sac_scale!=demanding_alpine_hiking],  /*what does this do if there no sac_scale tag?*/
-way.very_difficult[mtb:scale][mtb:scale!=6],
-way.very_difficult[incline<100],
-way.very_difficult[surface!~/rock|ground|dirt|earth/]
-{
-	set inc_expert;
-	dashes: 4,4;
-}
+/*TRAIL ACCESS*/
+/*implement the recommendations of Trail Access project https://wiki.openstreetmap.org/wiki/United_States/Trail_Access_Project 8/15/22 */
+way.trails[access=no],
+way.trails[access=private]
+{set closed; width: .5; color: darkred; casing-opacity: 0;}
+way[is_prop_set(closed, default)]::access_layer {z-index: -20; opacity: 0; }
+
+way.trails[informal=yes] 
+{set social; color: Pink;}
 
 
 
 /* Display of minor roads that are usally useable by bike */
-
 way[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
 {
 	color: white;
@@ -223,21 +289,21 @@ way[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle
 	casing-color: #684718;
 	casing-width: 1;
 }
-  way|z-14[highway=~/unclassified|residential|tertiary|service/]
+  way|z-14[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
     {
 	width: 2;
     }
-  way|z15-16[highway=~/unclassified|residential|tertiary|service/]
+  way|z15-16[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
     {
 	width: 3;
     }
-  way|z17-[highway=~/unclassified|residential|tertiary|service/]
+  way|z17-[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
     {
 	width: 5;
     }
 
 
-/* Display of regional and big roads */
+/* Display of regional and big roads for orientation */
 
 way[highway=~/motorway|trunk|primary|secondary/]
 {
@@ -261,12 +327,29 @@ way[highway=~/motorway|trunk|primary|secondary/]
 
 
 
+/* render key natural features */
+area[natural=water]:closed,
+area[waterway][waterway!=dam]:closed          { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+way[waterway=river], 
+way[waterway=canal], 
+way[waterway=stream]   { z-index: 5; color: #3434ff; width: 2; text:auto; text-color: #3434ff; font-size:9; text-position: line; text-offset: 7;}
 
-way[waterway]
-{
-	color: #6CCEE4;
-	width: 2;
+area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
+area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
+
+node[tourism=camp_site] {
+    icon-image: "presets/accommodation/camping.svg";
+    set icon_z17;
+}
+node[leisure=firepit] { 
+    icon-image: "presets/leisure/firepit.svg";
+    set icon_z17;
 }
 
-/* add a background glow for ways taking part in a bicycle route relation - similar to what is done in potlatch2.mapcss */
-relation[type=route][route=~/mtb|hiking/] > way::relation_underlay { z-index: -200; width: 12; color: aqua; opacity: 0.18; linecap: none; } 
+/* add a background glow for ways taking part in a bicycle route relation - similar to what is done in potlatch2.mapcss 
+relation[type=route][route=~/bicycle|mtb/] > way::wheeled_routes { z-index: -5; width: 20; color: red; opacity: 0.3; linecap: none; } 
+relation[type=route][route=~/hiking|foot/] > way::pedestrian_routes { z-index: -10; width: 20; color: green; opacity: 0.3; linecap: none; }  */
+
+
+
