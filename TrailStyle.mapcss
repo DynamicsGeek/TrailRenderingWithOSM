@@ -21,28 +21,32 @@ canvas
 /* */
 node
 {
-    symbol-shape: circle;
-    symbol-fill-color: darkgrey;
-    symbol-stroke-color: lightgreen;
+    symbol-shape: square;
+    symbol-stroke-color: lightgreen;	
+	symbol-stroke-width: 1;
+    symbol-stroke-opacity: .75;
+	symbol-fill-opacity: 0;
 }
+node:connection
+{
+	symbol-fill-opacity: 1;
+    symbol-fill-color: yellow;    
+}
+
 node|z-16
 {
     symbol-stroke-opacity: 0;
 	symbol-fill-opacity: 0;
 }
-node|z17
+node|z17-18
 {
-    symbol-size: 6;
-    symbol-stroke-width: 2;
+    symbol-size: 4;
+    symbol-stroke-width: 1;
 }
-node|z18-
+node|z19-
 {
-    symbol-size: 8;
+    symbol-size: 7;
     symbol-stroke-width: 3;
-}
-node:connection
-{
-    symbol-fill-color: yellow;    
 }
 
 
@@ -338,6 +342,7 @@ area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fil
 area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
 area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
 
+/* render key hiking features */
 node[tourism=camp_pitch], node[tourism=camp_site] {
     icon-image: "presets/accommodation/camp_pitch.svg";
 }
