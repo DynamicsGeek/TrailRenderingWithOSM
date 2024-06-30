@@ -338,14 +338,24 @@ area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fil
 area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
 area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
 
-node[tourism=camp_site] {
-    icon-image: "presets/accommodation/camping.svg";
-    set icon_z17;
+node[tourism=camp_pitch], node[tourism=camp_site] {
+    icon-image: "presets/accommodation/camp_pitch.svg";
 }
+
 node[leisure=firepit] { 
     icon-image: "presets/leisure/firepit.svg";
-    set icon_z17;
 }
+
+
+node[ford=stepping_stones],
+node[ford?] {
+    icon-image: "presets/vehicle/ford.svg";
+}
+
+node[tourism=information][information=guidepost] {
+    icon-image: "presets/misc/information/guidepost.svg";
+}
+
 
 /* add a background glow for ways taking part in a bicycle route relation - similar to what is done in potlatch2.mapcss 
 relation[type=route][route=~/bicycle|mtb/] > way::wheeled_routes { z-index: -5; width: 20; color: red; opacity: 0.3; linecap: none; } 
