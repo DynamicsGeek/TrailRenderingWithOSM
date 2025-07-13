@@ -1,0 +1,149 @@
+meta 
+{
+    title: "TrailBaseMap";
+    description: "visualize trail information, based on Heiko Woehrle MTB style";
+    version: "0.01_2022_0730";
+    author: "Troy Hartwig, Heiko Woehrle";
+    link: "https://";
+    min-josm-version: 7110; 
+}
+
+
+/* basic geometry */
+canvas
+{
+    /* fill-color: #909090; 
+	fill-opacity: 0.5;  */
+	
+	fill-color: #ffffea;
+}
+
+/* */
+node
+{
+    symbol-shape: square;
+    symbol-stroke-color: lightgreen;	
+	symbol-stroke-width: 1;
+    symbol-stroke-opacity: .75;
+	symbol-fill-opacity: 0;
+}
+node:connection
+{
+	symbol-fill-opacity: 1;
+    symbol-fill-color: yellow;    
+}
+
+node|z-16
+{
+    symbol-stroke-opacity: 0;
+	symbol-fill-opacity: 0;
+}
+node|z17-18
+{
+    symbol-size: 4;
+    symbol-stroke-width: 1;
+}
+node|z19-
+{
+    symbol-size: 7;
+    symbol-stroke-width: 3;
+}
+
+
+way
+{
+	color: blue;
+	width: thinnest;
+}
+
+
+/* render key natural features */
+area[natural=water]:closed,
+area[waterway][waterway!=dam]:closed          { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+way[waterway=river], 
+way[waterway=canal], 
+way[waterway=stream]   { z-index: 5; color: #3434ff; width: 2; text:auto; text-color: #3434ff; font-size:9; text-position: line; text-offset: 7;}
+
+area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
+area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
+
+
+/* Display of minor roads that are usally useable by bike */
+way[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
+{
+	color: white;
+	opacity: 0.5;
+	casing-color: #684718;
+	casing-width: 1;
+}
+  way|z-14[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
+    {
+	width: 2;
+    }
+  way|z15-16[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
+    {
+	width: 3;
+    }
+  way|z17-[highway=~/unclassified|residential|tertiary|service/][service!=parking_aisle]
+    {
+	width: 5;
+    }
+
+
+/* Display of regional and big roads for orientation */
+
+way[highway=~/motorway|trunk|primary|secondary/]
+{
+	color: #E6DEBE;
+	opacity: 0.5;
+	casing-color: #684718;
+	casing-width: 2;
+}
+  way|z-14[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 6;
+    }
+  way|z15-16[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 8;
+    }
+  way|z17-[highway=~/motorway|trunk|primary|secondary/]
+    {
+	width: 12;
+    }
+
+
+
+/* render key natural features */
+area[natural=water]:closed,
+area[waterway][waterway!=dam]:closed          { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+way[waterway=river], 
+way[waterway=canal], 
+way[waterway=stream]   { z-index: 5; color: #3434ff; width: 2; text:auto; text-color: #3434ff; font-size:9; text-position: line; text-offset: 7;}
+
+area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
+area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
+area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
+
+
+
+/* render key hiking features */
+node[tourism=camp_pitch], node[tourism=camp_site] {
+    icon-image: "presets/accommodation/camp_pitch.svg";
+}
+
+node[leisure=firepit] { 
+    icon-image: "presets/leisure/firepit.svg";
+}
+
+
+node[ford=stepping_stones],
+node[ford?] {
+    icon-image: "presets/vehicle/ford.svg";
+}
+
+node[tourism=information][information=guidepost] {
+    icon-image: "presets/misc/information/guidepost.svg";
+}
+

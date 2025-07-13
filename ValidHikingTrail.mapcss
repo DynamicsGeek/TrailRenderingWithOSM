@@ -12,58 +12,6 @@ meta
 https://josm.openstreetmap.de/wiki/Help/Styles/MapCSSImplementation#Propertyvaluesexplanations
 */
 
-/* basic geometry */
-canvas
-{
-	fill-color: floralwhite;
-	default-lines: false;
-}
-
-/* */
-node
-{
-    symbol-shape: circle;
-    symbol-fill-color: darkgrey;
-    symbol-stroke-color: lightgreen;
-}
-node|z-16
-{
-    symbol-stroke-opacity: 0;
-	symbol-fill-opacity: 0;
-}
-node|z17
-{
-    symbol-size: 6;
-    symbol-stroke-width: 2;
-}
-node|z18-
-{
-    symbol-size: 8;
-    symbol-stroke-width: 3;
-}
-node:connection
-{
-    symbol-fill-color: yellow;    
-}
-
-way
-{
-	color: blue;
-	width: thinnest;
-}
-
-/* render key natural features */
-area[natural=water]:closed,
-area[waterway][waterway!=dam]:closed          { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
-way[waterway=river], 
-way[waterway=canal], 
-way[waterway=stream]   { z-index: 5; color: #3434ff; width: 2; text:auto; text-color: #3434ff; font-size:9; text-position: line; text-offset: 7;}
-
-area[landuse=reservoir]:closed                { color: #3434ff;    width: 2; fill-color: #3434ff;    fill-opacity: 0.2; prop_area_small_name : 1;}
-area[landuse=forest]:closed, area[natural=wood]:closed { color: green;   width: 2; fill-color: green;   fill-opacity: 0.2; prop_area_small_name : 1;}
-area[leisure=park]:closed                     { color: #22aa22; width: 2; fill-color: #44ff44; fill-opacity: 0.15; prop_area_small_name : 1;}
-
-
 /* create a class which includes all of potential paths.  
 Render emphasis below based on tags which indicate validation of hiking tags */
 
@@ -128,10 +76,9 @@ Line Color, Operator / Access / Permission
 	blue:  Missing wikidata (but name and operator are defined)
 	red:  Missing access designation (If marked informal=yes)
 */
-
-way.trails[name][operator][operator:wikidata], way.trails[informal]
+way.trails[!access][!informal]
 {
-	color: black;
+	color: red;
 }
 
 way.trails[!operator:wikidata][name][operator]
@@ -139,10 +86,12 @@ way.trails[!operator:wikidata][name][operator]
 	color: blue;
 }
 
-way.trails[!access][informal=yes]
+way.trails[name][operator][operator:wikidata], way.trails[informal]
 {
-	color: red;
+	color: black;
 }
+
+
 
 /*
 Glow, Part of Route
