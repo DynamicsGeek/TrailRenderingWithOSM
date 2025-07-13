@@ -210,9 +210,64 @@ node[ford?] {
 
 node[highway=trailhead] {
     icon-image: "presets/landmark/trailhead.svg";
+	text: auto;
 }
 
 node[tourism=information][information=guidepost] {
     icon-image: "presets/misc/information/guidepost.svg";
 }
 
+node[amenity=parking] {
+    icon-image: "presets/vehicle/parking/parking.svg";
+	text: capacity;
+	text-halo-radius: 5;
+	text-offset-x: 5;                                    /* shift the text */
+    text-offset-y: 5; 
+}
+
+area[amenity=parking] {
+    icon-image: "presets/vehicle/parking/parking.svg";
+	text: capacity;
+	text-offset-x: 16;                                    /* shift the text */
+    text-offset-y: 17; 
+}
+
+node[amenity=parking_entrance] {
+    icon-image: "presets/vehicle/parking/parking.svg";
+}
+node[amenity=parking_space] {
+    icon-image: "presets/vehicle/parking/parking_space.svg";
+}
+node[leisure=picnic_table] {
+    icon-image: "presets/leisure/picnic.svg";
+}
+node[amenity=toilets],
+area[amenity=toilets] {
+    icon-image: "presets/service/toilets.svg";
+}
+
+/*
+<layout name="PathStructures">
+	highway=ladder,    	-->
+	bridge=yes, 
+	bridge=boardwalk, 
+	bridge=trestle, 
+	barrier=stile	-->
+	
+	barrier=gate, 
+	barrier=kissing_gate, 
+	barrier=swing_gate, 
+	barrier=chain	-->
+	<!-- Row 2: shelter_type=sun_shelter, information=route_marker (direction only), information=guidepost (destination distance), information=map	-->
+	<!-- Row 3: , amenity=toilets, 
+	<!-- Row 4: amenity=drinking_water, amenity=bench, backrest=yes, -->
+<layout name="Overnight">
+	<!-- Row 2:  amenity=bear_box  	-->
+	<!-- Row 3: shelter_type=lean_to, shelter_type=basic_hut, shelter_type=wilderness_hut , sheter_type=alpine_hut, 	-->
+	<!-- Row 4: capacity=1, capacity=2, capacity=4, capacity=8	--> 
+<layout name="NaturalFeatures"> 
+	
+	<!-- Row 2: waterway=stream, natural=spring; water=pond; waterway=waterfall 	-->
+
+	<!-- Row 3: natural=cliff, tourism=viewpoint	-->
+*/
